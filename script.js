@@ -32,18 +32,41 @@ function getWeatherInfo(city) {
       const temp = weather.main.temp;
       const humidity = weather.main.humidity;
       const wind = weather.wind.speed;
-      //const icon = weather.weather[0].icon;
+      const icon = weather.weather[0].icon;
       const weatherInfo = {
-        city: city,
-        country: country,
-        temp: temp,
-        humidity: humidity,
-        wind: wind
+        City: city,
+        Country: country,
+        Temp: temp,
+        Humidity: humidity,
+        Wind: wind,
+        Icon: icon,
       };
       return weatherInfo;
     });
 }
 
-getWeatherInfo('Seattle').then(function(weatherInfo) {
-  console.log(weatherInfo);
+const divWeather = document.getElementById("weather");
+
+function displayWeather(weatherInfo) {
+  for (let key in weatherInfo) {
+    if (key == "Icon") {
+      const img = document.createElement("img");
+      img.src = `http://openweathermap.org/img/wn/${weatherInfo[key]}@2x.png`
+      divWeather.appendChild(img);
+    } else {
+      const p = document.createElement("p");
+      p.innerHTML = `${key}: ${weatherInfo[key]}`;
+      divWeather.appendChild(p);
+    }
+  }
+}
+
+document.querySelector('form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  divWeather.textContent = "";
+  const city = e.target.city.value;
+  getWeatherInfo(city).then(function(weatherInfo) {
+    displayWeather(weatherInfo);
+  });
 });
+
