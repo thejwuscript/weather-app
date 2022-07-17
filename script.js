@@ -42,12 +42,16 @@ function getWeatherInfo(city) {
         Icon: icon,
       };
       return weatherInfo;
+    })
+    .catch(function(error) {
+      alert(error);
     });
 }
 
 const divWeather = document.getElementById("weather");
 
 function displayWeather(weatherInfo) {
+  divWeather.textContent = "";
   for (let key in weatherInfo) {
     if (key == "Icon") {
       const img = document.createElement("img");
@@ -64,9 +68,24 @@ function displayWeather(weatherInfo) {
 document.querySelector('form').addEventListener('submit', function(e) {
   e.preventDefault();
   divWeather.textContent = "";
+  const loadingText = document.createElement("p");
+  loadingText.textContent = "Loading...";
+  divWeather.appendChild(loadingText);
   const city = e.target.city.value;
-  getWeatherInfo(city).then(function(weatherInfo) {
-    displayWeather(weatherInfo);
-  });
+  getWeatherInfo(city)
+    .then(function(data) {
+      displayWeather(data);
+      displayLoadingTime();
+    })
+    .catch(function(error) {
+      alert("whhops");
+    });
 });
 
+function displayLoadingTime() {
+  const time = performance.getEntriesByType('resource').reduce((prev, curr) => prev += curr.duration, 0);
+  const roundedTime = Math.round(time);
+  const p = document.createElement("p");
+  p.innerHTML = `Loading time: ${roundedTime}ms`;
+  divWeather.appendChild(p);
+}
